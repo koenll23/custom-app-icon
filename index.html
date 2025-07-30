@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>📱 My Launcher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🚀 My Apps</h1>
+  <div id="apps" class="app-container"></div>
+  <br>
+  <a href="settings.html"><button class="add-btn">➕ Add New App</button></a>
+
+  <hr style="margin: 20px 0;" />
+
+  <button onclick="openClashRoyale()" class="clash-btn">🎮 Open Clash Royale App</button>
+
+  <script src="script.js"></script>
+
+  <script>
+    function openClashRoyale() {
+      const intentUrl = "intent://link.clashroyale.com#Intent;scheme=https;package=com.supercell.clashroyale;end";
+      window.location.href = intentUrl;
+    }
+  </script>
+</body>
+</html>
+
