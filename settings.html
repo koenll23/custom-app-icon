@@ -30,6 +30,24 @@
   }
   .app-slot {
     border:1px solid #333; padding:10px; margin-bottom:20px; border-radius:12px;
+    position: relative;
+  }
+  .delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #c00;
+    color: #fff;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+  }
+  .delete-btn:hover {
+    background: #a00;
   }
 </style>
 </head>
@@ -43,7 +61,7 @@
 
 <script>
   const maxApps = 10;
-  const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+  let apps = JSON.parse(localStorage.getItem('myApps') || '[]');
   const container = document.getElementById('appForms');
 
   function createAppForm(index, app = {}) {
@@ -52,6 +70,7 @@
 
     div.innerHTML = `
       <h3>App Slot ${index+1}</h3>
+      <button class="delete-btn" title="Delete this app">🗑️ Delete</button>
       <label for="name${index}">App Name:</label>
       <input type="text" id="name${index}" value="${app.name || ''}" placeholder="App name" />
 
@@ -64,16 +83,37 @@
       ${app.icon ? `<img src="${app.icon}" alt="icon" style="width:48px;height:48px;margin-top:10px;border-radius:8px;">` : ''}
     `;
 
+    // Delete button event
+    const deleteBtn = div.querySelector('.delete-btn');
+    deleteBtn.addEventListener('click', () => {
+      if(confirm(`Are you sure you want to delete app slot ${index + 1}? ⚠️`)) {
+        deleteApp(index);
+      }
+    });
+
     return div;
   }
 
-  for(let i=0; i<maxApps; i++) {
-    container.appendChild(createAppForm(i, apps[i]));
+  function loadForms() {
+    container.innerHTML = '';
+    apps = JSON.parse(localStorage.getItem('myApps') || '[]'); // refresh apps from storage
+    for(let i = 0; i < maxApps; i++) {
+      container.appendChild(createAppForm(i, apps[i]));
+    }
+  }
+
+  function deleteApp(index) {
+    // Remove the app at index
+    if(apps.length > index){
+      apps.splice(index,1);
+      localStorage.setItem('myApps', JSON.stringify(apps));
+      loadForms(); // reload forms to update UI
+      alert(`App slot ${index + 1} deleted! 🗑️🔥`);
+    }
   }
 
   function saveApps() {
     const newApps = [];
-
     let filesToLoad = 0;
     let loadedFiles = 0;
 
@@ -146,6 +186,9 @@
       }
     }
   }
+
+  // Initial load
+  loadForms();
 </script>
 </body>
 </html>
