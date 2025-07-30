@@ -54,8 +54,8 @@
   function loadApps() {
     const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
     appsContainer.innerHTML = '';
-    
-    if(apps.length === 0){
+
+    if (apps.length === 0) {
       appsContainer.innerHTML = "<p>No apps added yet! Click below to add some! 🌟</p>";
       return;
     }
@@ -64,15 +64,15 @@
       const appDiv = document.createElement('div');
       appDiv.className = 'app';
       appDiv.innerHTML = `
-        <img src="${app.icon}" alt="${app.name} icon" />
+        <img src="${app.icon || 'default-icon.png'}" alt="${app.name} icon" />
         <p>${app.name}</p>
         <button class="set-home-btn">Set on homepage</button>
       `;
 
-      // Click app area except button goes to appX.html
+      // Click on app except button navigates to appX.html
       appDiv.addEventListener('click', (e) => {
-        if(e.target.tagName.toLowerCase() === 'button') return;
-        window.location.href = \`app\${i+1}.html\`;
+        if (e.target.tagName.toLowerCase() === 'button') return; // ignore button click
+        window.location.href = \`app${i + 1}.html\`;
       });
 
       // Button sets homepage shortcut
