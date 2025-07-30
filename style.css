@@ -1,12 +1,21 @@
+/* style.css - styling for launcher and settings */
+
 body {
-  background-color: #111;
-  color: white;
+  background: #111;
+  color: #fff;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   padding: 20px;
+  margin: 0;
 }
 
-.app-container {
+h1 {
+  margin-bottom: 20px;
+  font-weight: 700;
+  font-size: 2rem;
+}
+
+#apps {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -19,6 +28,13 @@ body {
   padding: 10px;
   width: 120px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+.app:hover {
+  background: #333;
 }
 
 .app img {
@@ -26,52 +42,60 @@ body {
   height: 64px;
   border-radius: 8px;
   margin-bottom: 8px;
+  object-fit: contain;
 }
 
-input[type="text"], input[type="file"] {
-  width: 80%;
-  padding: 6px;
-  margin: 4px 0;
-  border-radius: 6px;
-  border: none;
+.app p {
+  margin: 0;
+  font-weight: bold;
+  font-size: 1rem;
 }
 
 button {
-  margin-top: 6px;
-  padding: 6px 12px;
+  background: #0c0;
   border: none;
-  background-color: #08f;
-  color: white;
-  border-radius: 6px;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  color: #fff;
   cursor: pointer;
+  margin-top: 20px;
   transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #06c;
+  background: #0a0;
 }
 
-.remove-btn {
-  background-color: #f00;
-  margin-top: 4px;
-}
+/* Settings page specific */
 
-.add-btn {
-  background-color: #0c0;
-}
-
-.clash-btn {
-  background-color: #f9a825;
-  color: #111;
+label {
+  display: block;
+  margin-top: 15px;
   font-weight: bold;
-  padding: 10px 20px;
-  border-radius: 12px;
-  margin-top: 10px;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.3s ease;
+  text-align: left;
 }
 
-.clash-btn:hover {
-  background-color: #c17900;
+input[type="text"],
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.app-slot {
+  border: 1px solid #333;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+img {
+  margin-top: 10px;
+  border-radius: 8px;
 }
