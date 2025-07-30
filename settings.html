@@ -1,98 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>⚙️ App Settings</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body {
-      background-color: #111;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 20px;
-      text-align: center;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    input[type="text"], input[type="file"] {
-      width: 80%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: none;
-      font-size: 1rem;
-    }
-
-    button {
-      margin-top: 25px;
-      padding: 12px 24px;
-      background-color: #0c0;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #0a0;
-    }
-
-    .back-btn {
-      background-color: #555;
-      margin-left: 15px;
-    }
-    .back-btn:hover {
-      background-color: #444;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>⚙️ Manage Apps</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  body {
+    background:#111; color:#fff; font-family:sans-serif; padding:20px;
+    max-width:600px; margin:0 auto; text-align:left;
+  }
+  h1 { text-align:center; margin-bottom:20px; }
+  label {
+    display:block; margin-top:15px; font-weight:bold;
+  }
+  input[type=text], input[type=file] {
+    width:100%; padding:8px; margin-top:5px; border-radius:6px; border:none; font-size:1rem;
+  }
+  button {
+    margin-top:25px; padding:12px 24px; background:#0c0; color:#fff;
+    border:none; border-radius:10px; cursor:pointer; font-size:1.1rem;
+    transition: background-color 0.3s ease;
+  }
+  button:hover { background:#0a0; }
+  .back-btn {
+    background:#555; margin-left:15px;
+  }
+  .back-btn:hover {
+    background:#444;
+  }
+  .app-slot {
+    border:1px solid #333; padding:10px; margin-bottom:20px; border-radius:12px;
+  }
+</style>
 </head>
 <body>
-  <h1>⚙️ Add New App</h1>
+<h1>⚙️ Manage Your Apps (Max 10)</h1>
 
-  <label for="appName">App Name:</label>
-  <input type="text" id="appName" placeholder="e.g. Golem Royale" />
+<div id="appForms"></div>
 
-  <label for="packageName">Android Package Name:</label>
-  <input type="text" id="packageName" placeholder="e.g. com.supercell.clashroyale" />
+<button onclick="saveApps()">💾 Save All</button>
+<button class="back-btn" onclick="location.href='index.html'">⬅️ Back</button>
 
-  <label for="iconUpload">Upload Icon (PNG recommended, square):</label>
-  <input type="file" id="iconUpload" accept="image/png, image/jpeg" />
+<script>
+  const maxApps = 10;
+  const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+  const container = document.getElementById('appForms');
 
-  <br />
+  function createAppForm(index, app = {}) {
+    const div = document.createElement('div');
+    div.className = 'app-slot';
 
-  <button onclick="saveApp()">💾 Save App</button>
-  <button class="back-btn" onclick="location.href='index.html'">⬅️ Back</button>
+    div.innerHTML = `
+      <h3>App Slot ${index+1}</h3>
+      <label for="name${index}">App Name:</label>
+      <input type="text" id="name${index}" value="${app.name || ''}" placeholder="App name" />
 
-  <script>
-    function saveApp() {
-      const name = document.getElementById('appName').value.trim();
-      const pkg = document.getElementById('packageName').value.trim();
-      const iconFile = document.getElementById('iconUpload').files[0];
+      <label for="package${index}">Android Package Name:</label>
+      <input type="text" id="package${index}" value="${app.package || ''}" placeholder="com.example.app" />
 
-      if (!name || !pkg || !iconFile) {
-        alert('Please fill in all fields and upload an icon!');
-        return;
+      <label for="icon${index}">Icon (PNG/JPG):</label>
+      <input type="file" id="icon${index}" accept="image/png, image/jpeg" />
+      <br/>
+      ${app.icon ? `<img src="${app.icon}" alt="icon" style="width:48px;height:48px;margin-top:10px;border-radius:8px;">` : ''}
+    `;
+
+    return div;
+  }
+
+  for(let i=0; i<maxApps; i++) {
+    container.appendChild(createAppForm(i, apps[i]));
+  }
+
+  function saveApps() {
+    const newApps = [];
+
+    let filesToLoad = 0;
+    let loadedFiles = 0;
+
+    for(let i=0; i<maxApps; i++) {
+      const name = document.getElementById(`name${i}`).value.trim();
+      const pkg = document.getElementById(`package${i}`).value.trim();
+      const iconInput = document.getElementById(`icon${i}`);
+      const iconFile = iconInput.files[0];
+
+      if(!name && !pkg && !iconFile) {
+        // skip empty slots
+        continue;
       }
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const iconData = e.target.result;
-
-        const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
-        apps.push({ name: name, package: pkg, icon: iconData });
-        localStorage.setItem('myApps', JSON.stringify(apps));
-
-        alert('App saved! Now create its launch page (see README)');
-        window.location.href = 'index.html';
-      };
-      reader.readAsDataURL(iconFile);
+      filesToLoad++;
     }
-  </script>
+
+    if(filesToLoad === 0) {
+      // No files to load, just save text fields
+      for(let i=0; i<maxApps; i++) {
+        const name = document.getElementById(`name${i}`).value.trim();
+        const pkg = document.getElementById(`package${i}`).value.trim();
+        const iconInput = document.getElementById(`icon${i}`);
+        // If no new icon uploaded, keep old icon from apps
+        let icon = apps[i] ? apps[i].icon : '';
+
+        if(!name && !pkg && !icon) continue;
+
+        newApps.push({ name, package: pkg, icon });
+      }
+      localStorage.setItem('myApps', JSON.stringify(newApps));
+      alert('Apps saved! 🚀');
+      location.href = 'index.html';
+      return;
+    }
+
+    // Otherwise load icons asynchronously
+    for(let i=0; i<maxApps; i++) {
+      const name = document.getElementById(`name${i}`).value.trim();
+      const pkg = document.getElementById(`package${i}`).value.trim();
+      const iconInput = document.getElementById(`icon${i}`);
+      const iconFile = iconInput.files[0];
+
+      if(!name && !pkg && !iconFile) {
+        continue;
+      }
+
+      if(iconFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          newApps.push({ name, package: pkg, icon: e.target.result });
+          loadedFiles++;
+          if(loadedFiles === filesToLoad) {
+            localStorage.setItem('myApps', JSON.stringify(newApps));
+            alert('Apps saved! 🚀');
+            location.href = 'index.html';
+          }
+        }
+        reader.readAsDataURL(iconFile);
+      } else {
+        // no new icon, keep old icon if exists
+        const oldIcon = apps[i] ? apps[i].icon : '';
+        newApps.push({ name, package: pkg, icon: oldIcon });
+        loadedFiles++;
+        if(loadedFiles === filesToLoad) {
+          localStorage.setItem('myApps', JSON.stringify(newApps));
+          alert('Apps saved! 🚀');
+          location.href = 'index.html';
+        }
+      }
+    }
+  }
+</script>
 </body>
 </html>
