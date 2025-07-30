@@ -1,27 +1,110 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>📱 My Launcher</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+  <title>🚀 Custom App Launcher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    #apps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .app {
+      background: #222;
+      border-radius: 12px;
+      padding: 10px;
+      width: 120px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+    .app:hover {
+      background-color: #333;
+    }
+
+    .app img {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .app p {
+      margin: 0;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .add-btn {
+      background-color: #0c0;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      color: white;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+    .add-btn:hover {
+      background-color: #0a0;
+    }
+  </style>
 </head>
 <body>
-  <h1>🚀 My Apps</h1>
-  <div id="apps" class="app-container"></div>
-  <br>
-  <a href="settings.html"><button class="add-btn">➕ Add New App</button></a>
+  <h1>🚀 Your Custom App Launcher</h1>
 
-  <hr style="margin: 20px 0;" />
+  <div id="apps"></div>
 
-  <button onclick="openClashRoyale()" class="clash-btn">🎮 Open Clash Royale App</button>
-
-  <script src="script.js"></script>
+  <button class="add-btn" onclick="location.href='settings.html'">➕ Add New App</button>
 
   <script>
-    function openClashRoyale() {
-      const intentUrl = "intent://link.clashroyale.com#Intent;scheme=https;package=com.supercell.clashroyale;end";
-      window.location.href = intentUrl;
+    // Slugify function for safe filenames
+    function slugify(str) {
+      return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    }
+
+    // Load apps from localStorage
+    const apps = JSON.parse(localStorage.getItem("myApps") || "[]");
+    const appsContainer = document.getElementById("apps");
+
+    if (apps.length === 0) {
+      appsContainer.innerHTML = "<p>No apps added yet. Click the green button below to add one! 🌟</p>";
+    } else {
+      apps.forEach(app => {
+        const appDiv = document.createElement("div");
+        appDiv.className = "app";
+
+        // Filename = slugified app name + .html
+        const pageFileName = slugify(app.name) + ".html";
+
+        appDiv.innerHTML = `
+          <img src="${app.icon}" alt="${app.name} icon" />
+          <p>${app.name}</p>
+        `;
+
+        appDiv.onclick = () => {
+          window.location.href = pageFileName;
+        };
+
+        appsContainer.appendChild(appDiv);
+      });
     }
   </script>
 </body>
