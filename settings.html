@@ -1,50 +1,97 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>⚙️ App Settings</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"], input[type="file"] {
+      width: 80%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    button {
+      margin-top: 25px;
+      padding: 12px 24px;
+      background-color: #0c0;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0a0;
+    }
+
+    .back-btn {
+      background-color: #555;
+      margin-left: 15px;
+    }
+    .back-btn:hover {
+      background-color: #444;
+    }
+  </style>
 </head>
 <body>
   <h1>⚙️ Add New App</h1>
 
-  <label>App Name:</label><br />
-  <input type="text" id="appName" placeholder="e.g. Golem Royale" /><br /><br />
+  <label for="appName">App Name:</label>
+  <input type="text" id="appName" placeholder="e.g. Golem Royale" />
 
-  <label>Android Package Name:</label><br />
-  <input type="text" id="packageName" placeholder="e.g. com.supercell.clashroyale" /><br /><br />
+  <label for="packageName">Android Package Name:</label>
+  <input type="text" id="packageName" placeholder="e.g. com.supercell.clashroyale" />
 
-  <label>Upload Icon (PNG, 192x192):</label><br />
-  <input type="file" id="iconUpload" accept="image/png" /><br /><br />
+  <label for="iconUpload">Upload Icon (PNG recommended, square):</label>
+  <input type="file" id="iconUpload" accept="image/png, image/jpeg" />
 
-  <button onclick="saveSettings()">💾 Save</button>
-  <a href="index.html"><button style="margin-left:10px;">⬅️ Back</button></a>
+  <br />
+
+  <button onclick="saveApp()">💾 Save App</button>
+  <button class="back-btn" onclick="location.href='index.html'">⬅️ Back</button>
 
   <script>
-    function saveSettings() {
-      const name = document.getElementById("appName").value.trim();
-      const pkg = document.getElementById("packageName").value.trim();
-      const icon = document.getElementById("iconUpload").files[0];
+    function saveApp() {
+      const name = document.getElementById('appName').value.trim();
+      const pkg = document.getElementById('packageName').value.trim();
+      const iconFile = document.getElementById('iconUpload').files[0];
 
-      if (!name || !pkg || !icon) {
-        alert("Please fill in all fields and upload an icon!");
+      if (!name || !pkg || !iconFile) {
+        alert('Please fill in all fields and upload an icon!');
         return;
       }
 
       const reader = new FileReader();
-      reader.onload = function (e) {
+      reader.onload = function(e) {
         const iconData = e.target.result;
 
-        const apps = JSON.parse(localStorage.getItem("myApps") || "[]");
-        apps.push({ name, package: pkg, icon: iconData });
-        localStorage.setItem("myApps", JSON.stringify(apps));
+        const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+        apps.push({ name: name, package: pkg, icon: iconData });
+        localStorage.setItem('myApps', JSON.stringify(apps));
 
-        alert("App saved! ✅");
-        window.location.href = "index.html";
+        alert('App saved! Now create its launch page (see README)');
+        window.location.href = 'index.html';
       };
-
-      reader.readAsDataURL(icon);
+      reader.readAsDataURL(iconFile);
     }
   </script>
 </body>
