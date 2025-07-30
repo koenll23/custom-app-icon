@@ -14,15 +14,24 @@
   }
   .app {
     background:#222; border-radius:12px; padding:10px; width:120px;
-    box-shadow:0 4px 8px rgba(0,0,0,0.4); cursor:pointer; user-select:none;
+    box-shadow:0 4px 8px rgba(0,0,0,0.4); user-select:none;
     transition:background-color 0.3s ease;
+    display:flex; flex-direction: column; align-items: center;
   }
   .app:hover { background:#333; }
   .app img {
     width:64px; height:64px; border-radius:8px; margin-bottom:8px;
   }
   .app p {
-    margin:0; font-weight:bold; font-size:1rem;
+    margin:0 0 8px 0; font-weight:bold; font-size:1rem;
+  }
+  .set-home-btn {
+    background:#0c0; border:none; border-radius:8px; padding:6px 10px;
+    font-size:0.9rem; color:#fff; cursor:pointer;
+    transition: background-color 0.3s ease;
+  }
+  .set-home-btn:hover {
+    background:#0a0;
   }
   .add-btn {
     background:#0c0; border:none; border-radius:8px; padding:10px 20px;
@@ -40,34 +49,59 @@
 <button class="add-btn" onclick="location.href='settings.html'">➕ Add/Edit Apps</button>
 
 <script>
-  // Load apps from localStorage
-  const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
   const appsContainer = document.getElementById('apps');
-
-  if(apps.length === 0){
-    appsContainer.innerHTML = "<p>No apps added yet! Click below to add some! 🌟</p>";
-  } else {
-    // Show up to 10 apps max
+  const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+  
+  function loadApps() {
+    appsContainer.innerHTML = '';
+    if(apps.length === 0){
+      appsContainer.innerHTML = "<p>No apps added yet! Click below to add some! 🌟</p>";
+      return;
+    }
+  
     for(let i=0; i<10; i++){
       const app = apps[i];
       if(!app) break;
 
       const appDiv = document.createElement('div');
       appDiv.className = 'app';
-
       appDiv.innerHTML = `
         <img src="${app.icon}" alt="${app.name} icon" />
         <p>${app.name}</p>
+        <button class="set-home-btn">Set on homepage</button>
       `;
 
-      // Link to appX.html (1-based index)
-      appDiv.onclick = () => {
-        window.location.href = `app${i+1}.html`;
-      };
+      // Clicking the app area (except button) opens appX.html
+      appDiv.addEventListener('click', (e) => {
+        if(e.target.tagName.toLowerCase() === 'button') return; // ignore button click here
+        window.location.href = \`app\${i+1}.html\`;
+      });
+
+      // Button to set as homepage shortcut
+      const btn = appDiv.querySelector('.set-home-btn');
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setOnHomepage(i);
+      });
 
       appsContainer.appendChild(appDiv);
     }
   }
+
+  // Function to set an app as homepage shortcut
+  function setOnHomepage(index) {
+    const shortcut = {
+      name: apps[index].name,
+      appIndex: index
+    };
+    localStorage.setItem('homepageShortcut', JSON.stringify(shortcut));
+    alert(`✅ "${apps[index].name}" is now set as your homepage shortcut! 🚀🔥`);
+  }
+
+  // Optionally, you can show this shortcut somewhere or use it as you like
+  // For example, on page load, you could redirect or highlight the shortcut app
+
+  document.addEventListener('DOMContentLoaded', loadApps);
 </script>
 </body>
 </html>
