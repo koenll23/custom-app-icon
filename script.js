@@ -1,43 +1,34 @@
-const apps = JSON.parse(localStorage.getItem("myApps") || "[]");
-const container = document.getElementById("apps");
+// script.js - handles loading apps & navigation
 
-if (container) {
-  container.innerHTML = ""; // Clear first
+const appsContainer = document.getElementById('apps');
 
-  apps.forEach((app, index) => {
-    const div = document.createElement("div");
-    div.className = "app";
+function loadApps() {
+  const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+  appsContainer.innerHTML = '';
 
-    div.innerHTML = `
-      <img src="${app.icon}" alt="${app.name}" />
-      <br />
-      <strong>${app.name}</strong>
-      <br />
-      <button onclick="launch('${app.package}')">▶️ Launch</button>
-      <button onclick="removeApp(${index})" class="remove-btn">🗑️</button>
+  if(apps.length === 0){
+    appsContainer.innerHTML = "<p>No apps added yet! Click below to add some! 🌟</p>";
+    return;
+  }
+
+  for(let i = 0; i < 10; i++){
+    const app = apps[i];
+    if(!app) break;
+
+    const appDiv = document.createElement('div');
+    appDiv.className = 'app';
+
+    appDiv.innerHTML = `
+      <img src="${app.icon}" alt="${app.name} icon" />
+      <p>${app.name}</p>
     `;
 
-    container.appendChild(div);
-  });
-}
+    appDiv.addEventListener('click', () => {
+      window.location.href = `app${i+1}.html`;
+    });
 
-function launch(pkg) {
-  if (pkg === "com.supercell.clashroyale") {
-    // Special intent for Clash Royale
-    window.location.href =
-      "intent://link.clashroyale.com#Intent;scheme=https;package=com.supercell.clashroyale;end";
-  } else {
-    // Generic intent for other apps
-    window.location.href = `intent://${pkg}#Intent;scheme=android-app;package=${pkg};end`;
+    appsContainer.appendChild(appDiv);
   }
 }
 
-function removeApp(index) {
-  const confirmDel = confirm("Are you sure you want to delete this app?");
-  if (!confirmDel) return;
-
-  const apps = JSON.parse(localStorage.getItem("myApps") || "[]");
-  apps.splice(index, 1);
-  localStorage.setItem("myApps", JSON.stringify(apps));
-  location.reload();
-}
+document.addEventListener('DOMContentLoaded', loadApps);
