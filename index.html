@@ -72,7 +72,7 @@
       // Click on app except button navigates to appX.html
       appDiv.addEventListener('click', (e) => {
         if (e.target.tagName.toLowerCase() === 'button') return; // ignore button click
-        window.location.href = \`app${i + 1}.html\`;
+        window.location.href = `app${i + 1}.html`;
       });
 
       // Button sets homepage shortcut
