@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>⚙️ App Settings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>⚙️ Add New App</h1>
+
+  <label>App Name:</label><br />
+  <input type="text" id="appName" placeholder="e.g. Golem Royale" /><br /><br />
+
+  <label>Android Package Name:</label><br />
+  <input type="text" id="packageName" placeholder="e.g. com.supercell.clashroyale" /><br /><br />
+
+  <label>Upload Icon (PNG, 192x192):</label><br />
+  <input type="file" id="iconUpload" accept="image/png" /><br /><br />
+
+  <button onclick="saveSettings()">💾 Save</button>
+  <a href="index.html"><button style="margin-left:10px;">⬅️ Back</button></a>
+
+  <script>
+    function saveSettings() {
+      const name = document.getElementById("appName").value.trim();
+      const pkg = document.getElementById("packageName").value.trim();
+      const icon = document.getElementById("iconUpload").files[0];
+
+      if (!name || !pkg || !icon) {
+        alert("Please fill in all fields and upload an icon!");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const iconData = e.target.result;
+
+        const apps = JSON.parse(localStorage.getItem("myApps") || "[]");
+        apps.push({ name, package: pkg, icon: iconData });
+        localStorage.setItem("myApps", JSON.stringify(apps));
+
+        alert("App saved! ✅");
+        window.location.href = "index.html";
+      };
+
+      reader.readAsDataURL(icon);
+    }
+  </script>
+</body>
+</html>
