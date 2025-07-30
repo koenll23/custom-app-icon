@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Launching App...</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script>
+  // Get the current filename to extract app index
+  const fileName = location.pathname.split('/').pop(); // e.g. app3.html
+  const match = fileName.match(/app(\d+)\.html/);
+  const appIndex = match ? parseInt(match[1], 10) - 1 : 0;
+
+  // Load apps from localStorage
+  const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+  const app = apps[appIndex];
+
+  if(app && app.package) {
+    // Construct Android intent URL
+    const intentUrl = `intent://#Intent;package=${app.package};end`;
+
+    // Redirect instantly to launch app
+    location.replace(intentUrl);
+  } else {
+    document.body.innerHTML = "<p style='color:#fff; text-align:center; margin-top:40px;'>No app configured in this slot!</p>";
+  }
+</script>
+</head>
+<body style="background:#111; color:#fff; font-family:sans-serif; text-align:center; padding:20px;">
+  <p>Launching app...</p>
+</body>
+</html>
