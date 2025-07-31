@@ -63,19 +63,23 @@
     apps.slice(0, 10).forEach((app, i) => {
       const appDiv = document.createElement('div');
       appDiv.className = 'app';
+
+      // Use app.icon base64 or fallback to default icon
+      const iconSrc = app.icon || 'default-icon.png';
+
       appDiv.innerHTML = `
-        <img src="${app.icon || 'default-icon.png'}" alt="${app.name} icon" />
+        <img src="${iconSrc}" alt="${app.name} icon" />
         <p>${app.name}</p>
         <button class="set-home-btn">Set on homepage</button>
       `;
 
-      // Click on app except button navigates to appX.html
+      // Clicking on app (except button) navigates to appX.html
       appDiv.addEventListener('click', (e) => {
         if (e.target.tagName.toLowerCase() === 'button') return; // ignore button click
-        window.location.href = `app${i + 1}.html`;
+        window.location.href = \`app\${i + 1}.html\`;
       });
 
-      // Button sets homepage shortcut
+      // Button sets homepage shortcut in localStorage
       const btn = appDiv.querySelector('.set-home-btn');
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -88,7 +92,7 @@
 
   function setOnHomepage(app) {
     localStorage.setItem('homepageShortcut', JSON.stringify(app));
-    alert(`✅ "${app.name}" is now set as your homepage shortcut! 🚀🔥`);
+    alert(\`✅ "\${app.name}" is now set as your homepage shortcut! 🚀🔥\`);
   }
 
   document.addEventListener('DOMContentLoaded', loadApps);
