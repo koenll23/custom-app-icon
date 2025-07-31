@@ -20,9 +20,16 @@ const urlsToCache = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
+    caches.open(CACHE_NAME).then(async cache => {
       console.log('✅ Opened cache & caching files...');
-      return cache.addAll(urlsToCache);
+      for (const url of urlsToCache) {
+        try {
+          await cache.add(url);
+          console.log(`✅ Cached: ${url}`);
+        } catch (err) {
+          console.warn(`⚠️ Skipped ${url}: ${err.message}`);
+        }
+      }
     })
   );
 });
@@ -34,4 +41,3 @@ self.addEventListener('fetch', event => {
     })
   );
 });
-
