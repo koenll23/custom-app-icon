@@ -4,6 +4,10 @@
 <meta charset="UTF-8" />
 <title>🚀 Custom App Launcher</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- This manifest will be dynamically replaced -->
+<link rel="manifest" href="manifest.json" />
+
 <style>
   body {
     background:#111; color:#fff; font-family:sans-serif; text-align:center; padding:20px;
@@ -63,23 +67,19 @@
     apps.slice(0, 10).forEach((app, i) => {
       const appDiv = document.createElement('div');
       appDiv.className = 'app';
-
-      // Use app.icon base64 or fallback to default icon
-      const iconSrc = app.icon || 'default-icon.png';
-
       appDiv.innerHTML = `
-        <img src="${iconSrc}" alt="${app.name} icon" />
+        <img src="${app.icon || 'default-icon.png'}" alt="${app.name} icon" />
         <p>${app.name}</p>
         <button class="set-home-btn">Set on homepage</button>
       `;
 
-      // Clicking on app (except button) navigates to appX.html
+      // Click on app except button navigates to appX.html
       appDiv.addEventListener('click', (e) => {
         if (e.target.tagName.toLowerCase() === 'button') return; // ignore button click
-        window.location.href = \`app\${i + 1}.html\`;
+        window.location.href = `app${i + 1}.html`;
       });
 
-      // Button sets homepage shortcut in localStorage
+      // Button sets homepage shortcut
       const btn = appDiv.querySelector('.set-home-btn');
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -92,10 +92,71 @@
 
   function setOnHomepage(app) {
     localStorage.setItem('homepageShortcut', JSON.stringify(app));
-    alert(\`✅ "\${app.name}" is now set as your homepage shortcut! 🚀🔥\`);
+    alert(`✅ "${app.name}" is now set as your homepage shortcut! 🚀🔥`);
   }
 
-  document.addEventListener('DOMContentLoaded', loadApps);
+  // Create dynamic manifest with localStorage icons
+  async function createManifestFromLocalStorageIcons() {
+    const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+    const icons = [];
+
+    for (let i = 0; i < apps.length && i < 10; i++) {
+      const app = apps[i];
+      if (app && app.icon) {
+        try {
+          const res = await fetch(app.icon);
+          const blob = await res.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          icons.push({
+            src: blobUrl,
+            sizes: "64x64",
+            type: blob.type
+          });
+        } catch (err) {
+          console.warn("Error loading icon blob:", err);
+        }
+      }
+    }
+
+    const manifest = {
+      name: "Custom App Launcher 🚀",
+      short_name: "Launcher",
+      start_url: "index.html",
+      display: "standalone",
+      background_color: "#111111",
+      theme_color: "#0c0",
+      icons: icons.length > 0 ? icons : [
+        { src: 'default-icon.png', sizes: '64x64', type: 'image/png' }
+      ]
+    };
+
+    const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(manifestBlob);
+
+    let manifestLink = document.querySelector('link[rel="manifest"]');
+    if (!manifestLink) {
+      manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      document.head.appendChild(manifestLink);
+    }
+    manifestLink.href = manifestURL;
+
+    console.log('Dynamic manifest created with localStorage icons!! 🔥🔥');
+  }
+
+  // Register service worker for offline support & PWA install (optional but recommended)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('Service Worker registered!', reg))
+      .catch(err => console.error('Service Worker registration failed:', err));
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadApps();
+    createManifestFromLocalStorageIcons();
+  });
 </script>
 </body>
 </html>
