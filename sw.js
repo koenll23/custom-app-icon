@@ -6,22 +6,22 @@ const urlsToCache = [
   '/manifest.json',
   '/default-icon.png',
   '/style.css',
-  '/app1.html'
-  '/app2.html'
-  '/app3.html'
-  '/app4.html'
-  '/app5.html'
-  '/app6.html'
-  '/app7.html'
-  '/app8.html'
-  '/app9.html'
+  '/app1.html',
+  '/app2.html',
+  '/app3.html',
+  '/app4.html',
+  '/app5.html',
+  '/app6.html',
+  '/app7.html',
+  '/app8.html',
+  '/app9.html',
   '/app10.html'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('Opened cache');
+      console.log('✅ Opened cache & caching files...');
       return cache.addAll(urlsToCache);
     })
   );
@@ -34,3 +34,4 @@ self.addEventListener('fetch', event => {
     })
   );
 });
+
