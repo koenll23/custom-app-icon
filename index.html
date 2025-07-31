@@ -91,7 +91,7 @@
 
   <script>
     const appsContainer = document.getElementById('apps');
-    let deferredPrompt; // For the install prompt button
+    let deferredPrompt;
 
     function loadApps() {
       const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
@@ -102,27 +102,24 @@
         return;
       }
 
-      apps.slice(0, 10).forEach((app, i) => {
+      apps.slice(0, 10).forEach(function(app, i) {
         const appDiv = document.createElement('div');
         appDiv.className = 'app';
-        appDiv.innerHTML = `
-          <img src="${app.icon || 'default-icon.png'}" alt="${app.name} icon" />
-          <p>${app.name}</p>
-          <button class="set-home-btn">Set on homepage</button>
-        `;
+        appDiv.innerHTML =
+          '<img src="' + (app.icon || 'default-icon.png') + '" alt="' + app.name + ' icon" />' +
+          '<p>' + app.name + '</p>' +
+          '<button class="set-home-btn">Set on homepage</button>';
 
-        // Click on app (except button) navigates
-        appDiv.addEventListener('click', (e) => {
-          if (e.target.tagName.toLowerCase() === 'button') return; 
-          window.location.href = `app\${i + 1}.html`;
+        appDiv.addEventListener('click', function(e) {
+          if (e.target.tagName.toLowerCase() === 'button') return;
+          window.location.href = 'app' + (i + 1) + '.html';
         });
 
-        // Set homepage shortcut button
         const btn = appDiv.querySelector('.set-home-btn');
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', function(e) {
           e.stopPropagation();
           localStorage.setItem('homepageShortcut', JSON.stringify(app));
-          alert(`✅ "${app.name}" is now set as your homepage shortcut! 🚀🔥`);
+          alert('✅ "' + app.name + '" is now set as your homepage shortcut! 🚀🔥');
         });
 
         appsContainer.appendChild(appDiv);
@@ -130,18 +127,17 @@
     }
 
     // Show install prompt button when available
-    window.addEventListener('beforeinstallprompt', (e) => {
+    window.addEventListener('beforeinstallprompt', function(e) {
       e.preventDefault();
       deferredPrompt = e;
 
-      // Check if install button already exists to avoid duplicates
       if (!document.querySelector('.install-btn')) {
         const installBtn = document.createElement('button');
         installBtn.className = 'install-btn';
         installBtn.textContent = '📲 Install as App';
         document.body.appendChild(installBtn);
 
-        installBtn.addEventListener('click', async () => {
+        installBtn.addEventListener('click', async function() {
           installBtn.disabled = true;
           deferredPrompt.prompt();
           const choiceResult = await deferredPrompt.userChoice;
@@ -159,8 +155,12 @@
     // Register Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('✅ Service worker registered'))
-        .catch((err) => console.error('❌ Service worker failed:', err));
+        .then(function() {
+          console.log('✅ Service worker registered');
+        })
+        .catch(function(err) {
+          console.error('❌ Service worker failed:', err);
+        });
     }
 
     document.addEventListener('DOMContentLoaded', loadApps);
