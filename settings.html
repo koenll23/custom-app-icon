@@ -52,7 +52,7 @@
   </style>
 </head>
 <body>
-  <h1>⚙️ Manage Your Apps (Max 10)</h1>
+  <h1>⚙️ Manage Your Apps (LocalStorage only!)</h1>
 
   <div id="appForms"></div>
 
@@ -70,7 +70,7 @@
 
       div.innerHTML = `
         <h3>App Slot ${index + 1}</h3>
-        <button class="delete-btn" title="Delete this app">🗑️ Delete</button>
+        <button class="delete-btn">🗑️ Delete</button>
         <label for="name${index}">App Name:</label>
         <input type="text" id="name${index}" value="${app.name || ''}" placeholder="App name" />
 
@@ -83,22 +83,13 @@
         ${app.icon ? `<img src="${app.icon}" alt="icon" style="width:48px;height:48px;margin-top:10px;border-radius:8px;">` : ''}
       `;
 
-      const deleteBtn = div.querySelector('.delete-btn');
-      deleteBtn.addEventListener('click', () => {
-        if (confirm(`Are you sure you want to delete app slot ${index + 1}? ⚠️`)) {
+      div.querySelector('.delete-btn').onclick = () => {
+        if (confirm(`Delete app slot ${index + 1}? ⚠️`)) {
           deleteApp(index);
         }
-      });
+      };
 
       return div;
-    }
-
-    function loadForms() {
-      container.innerHTML = '';
-      apps = JSON.parse(localStorage.getItem('myApps') || '[]');
-      for (let i = 0; i < maxApps; i++) {
-        container.appendChild(createAppForm(i, apps[i]));
-      }
     }
 
     function deleteApp(index) {
@@ -110,16 +101,22 @@
       }
     }
 
+    function loadForms() {
+      container.innerHTML = '';
+      apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+      for (let i = 0; i < maxApps; i++) {
+        container.appendChild(createAppForm(i, apps[i]));
+      }
+    }
+
     function saveApps() {
       const newApps = [];
       let filesToLoad = 0;
       let loadedFiles = 0;
 
-      // Eerst tellen we hoeveel icon-bestanden er zijn
       for (let i = 0; i < maxApps; i++) {
         const iconInput = document.getElementById(`icon${i}`);
-        const iconFile = iconInput.files[0];
-        if (iconFile) filesToLoad++;
+        if (iconInput.files[0]) filesToLoad++;
       }
 
       for (let i = 0; i < maxApps; i++) {
@@ -130,46 +127,38 @@
 
         if (!name && !pkg && !iconFile && !(apps[i] && apps[i].icon)) continue;
 
-        const processApp = (iconData) => {
+        const processApp = (base64) => {
           newApps[i] = {
             name,
             package: pkg,
-            icon: iconData
+            icon: base64 || (apps[i] ? apps[i].icon : '')
           };
           loadedFiles++;
           if (loadedFiles === filesToLoad) {
             localStorage.setItem('myApps', JSON.stringify(newApps));
-            alert('Apps saved! 🚀');
+            alert('✅ Apps saved to localStorage! 🔥');
             location.href = 'index.html';
           }
         };
 
         if (iconFile) {
           const reader = new FileReader();
-          reader.onload = (e) => processApp(e.target.result);
+          reader.onload = (e) => {
+            processApp(e.target.result);
+          };
           reader.readAsDataURL(iconFile);
         } else {
-          const oldIcon = apps[i] ? apps[i].icon : '';
-          processApp(oldIcon);
+          processApp();
         }
       }
 
-      // Als er geen icons zijn om te laden, sla gewoon alles op
       if (filesToLoad === 0) {
-        for (let i = 0; i < maxApps; i++) {
-          const name = document.getElementById(`name${i}`).value.trim();
-          const pkg = document.getElementById(`package${i}`).value.trim();
-          const oldIcon = apps[i] ? apps[i].icon : '';
-          if (!name && !pkg && !oldIcon) continue;
-          newApps[i] = { name, package: pkg, icon: oldIcon };
-        }
         localStorage.setItem('myApps', JSON.stringify(newApps));
-        alert('Apps saved! 🚀');
+        alert('✅ Apps saved to localStorage! 🔥');
         location.href = 'index.html';
       }
     }
 
-    // Let's gooo! Laad de app forms bij start! 😎💪
     loadForms();
   </script>
 </body>
