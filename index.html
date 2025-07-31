@@ -1,161 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>🚀 Custom App Launcher</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="default-icon.png" />
-  <meta name="theme-color" content="#0c0" />
-  <style>
-    body {
-      background: #111;
-      color: #fff;
-      font-family: sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      margin-bottom: 20px;
-    }
-    #apps {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
-    .app {
-      background: #222;
-      border-radius: 12px;
-      padding: 10px;
-      width: 120px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-      user-select: none;
-      transition: background-color 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .app:hover {
-      background: #333;
-      cursor: pointer;
-    }
-    .app img {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-    }
-    .app p {
-      margin: 0 0 8px 0;
-      font-weight: bold;
-      font-size: 1rem;
-    }
-    .set-home-btn, .install-btn {
-      background: #0c0;
-      border: none;
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 0.9rem;
-      color: #fff;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-top: 6px;
-    }
-    .set-home-btn:hover, .install-btn:hover {
-      background: #0a0;
-    }
-    .add-btn {
-      background: #0c0;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      color: #fff;
-      cursor: pointer;
-      margin-top: 20px;
-      transition: background-color 0.3s ease;
-    }
-    .add-btn:hover {
-      background: #0a0;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>🚀 Custom App Launcher</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  body {
+    background:#111; color:#fff; font-family:sans-serif; text-align:center; padding:20px;
+  }
+  h1 { margin-bottom:20px; }
+  #apps {
+    display:flex; flex-wrap:wrap; justify-content:center; gap:20px;
+  }
+  .app {
+    background:#222; border-radius:12px; padding:10px; width:120px;
+    box-shadow:0 4px 8px rgba(0,0,0,0.4); user-select:none;
+    transition:background-color 0.3s ease;
+    display:flex; flex-direction: column; align-items: center;
+  }
+  .app:hover { background:#333; cursor:pointer; }
+  .app img {
+    width:64px; height:64px; border-radius:8px; margin-bottom:8px;
+  }
+  .app p {
+    margin:0 0 8px 0; font-weight:bold; font-size:1rem;
+  }
+  .set-home-btn {
+    background:#0c0; border:none; border-radius:8px; padding:6px 10px;
+    font-size:0.9rem; color:#fff; cursor:pointer;
+    transition: background-color 0.3s ease;
+  }
+  .set-home-btn:hover {
+    background:#0a0;
+  }
+  .add-btn {
+    background:#0c0; border:none; border-radius:8px; padding:10px 20px;
+    font-size:1.2rem; color:#fff; cursor:pointer; margin-top:20px;
+    transition:background-color 0.3s ease;
+  }
+  .add-btn:hover { background:#0a0; }
+</style>
 </head>
 <body>
-  <h1>🚀 Your Custom App Launcher</h1>
-  <div id="apps"></div>
+<h1>🚀 Your Custom App Launcher</h1>
 
-  <button class="add-btn" onclick="location.href='settings.html'">➕ Add/Edit Apps</button>
+<div id="apps"></div>
 
-  <script>
-    const appsContainer = document.getElementById('apps');
+<button class="add-btn" onclick="location.href='settings.html'">➕ Add/Edit Apps</button>
 
-    function loadApps() {
-      const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
-      appsContainer.innerHTML = '';
+<script>
+  const appsContainer = document.getElementById('apps');
 
-      if (apps.length === 0) {
-        appsContainer.innerHTML = "<p>No apps added yet! Click below to add some! 🌟</p>";
-        return;
-      }
+  // Base64 placeholder icon if no icon found
+  const base64Placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAA...'; // Replace with your full base64 data
 
-      apps.slice(0, 10).forEach((app, i) => {
-        const appDiv = document.createElement('div');
-        appDiv.className = 'app';
-        appDiv.innerHTML = `
-          <img src="${app.icon || 'default-icon.png'}" alt="${app.name} icon" />
-          <p>${app.name}</p>
-          <button class="set-home-btn">Set on homepage</button>
-        `;
+  function loadApps() {
+    const apps = JSON.parse(localStorage.getItem('myApps') || '[]');
+    appsContainer.innerHTML = '';
 
-        appDiv.addEventListener('click', (e) => {
-          if (e.target.tagName.toLowerCase() === 'button') return;
-          window.location.href = \`app\${i + 1}.html\`;
-        });
-
-        const btn = appDiv.querySelector('.set-home-btn');
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          localStorage.setItem('homepageShortcut', JSON.stringify(app));
-          alert(\`✅ "\${app.name}" is now set as your homepage shortcut! 🚀🔥\`);
-        });
-
-        appsContainer.appendChild(appDiv);
-      });
+    if (apps.length === 0) {
+      appsContainer.innerHTML = "<p>No apps added yet! Click below to add some! 🌟</p>";
+      return;
     }
 
-    // A2HS install prompt
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
+    apps.slice(0, 10).forEach((app, i) => {
+      const iconSrc = app.icon || base64Placeholder;
+      const appDiv = document.createElement('div');
+      appDiv.className = 'app';
+      appDiv.innerHTML = `
+        <img src="${iconSrc}" alt="${app.name} icon" />
+        <p>${app.name}</p>
+        <button class="set-home-btn">Set on homepage</button>
+      `;
 
-      const installBtn = document.createElement('button');
-      installBtn.className = 'install-btn';
-      installBtn.innerText = '📲 Install as App';
-      document.body.appendChild(installBtn);
-
-      installBtn.addEventListener('click', () => {
-        installBtn.remove();
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(choice => {
-          if (choice.outcome === 'accepted') {
-            console.log('✅ Installed!');
-          } else {
-            console.log('❌ Install dismissed!');
-          }
-          deferredPrompt = null;
-        });
+      // Click on app except button navigates to appX.html
+      appDiv.addEventListener('click', (e) => {
+        if (e.target.tagName.toLowerCase() === 'button') return;
+        window.location.href = \`app${i + 1}.html\`;
       });
+
+      // Button sets homepage shortcut
+      const btn = appDiv.querySelector('.set-home-btn');
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setOnHomepage(app);
+      });
+
+      appsContainer.appendChild(appDiv);
     });
+  }
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(() => {
-        console.log('✅ Service worker registered!');
-      });
-    }
+  function setOnHomepage(app) {
+    localStorage.setItem('homepageShortcut', JSON.stringify(app));
+    alert(\`✅ "\${app.name}" is now set as your homepage shortcut! 🚀🔥\`);
+  }
 
-    document.addEventListener('DOMContentLoaded', loadApps);
-  </script>
+  document.addEventListener('DOMContentLoaded', loadApps);
+</script>
 </body>
 </html>
